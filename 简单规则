@@ -18,23 +18,17 @@ parsers: # array
   #添加分组
 
       prepend-proxy-groups:
-          - name: 🚀 节点选择
-            type: select
-            proxies:
-                - ♻️ 自动选择
-                - DIRECT
-
-              
           - name: ♻️ 自动选择
             type: url-test
             url: http://www.gstatic.com/generate_204
             interval: 3000
             tolerance: 50
 
-          - name: 🌍 国外
+          - name: 🚀 节点选择
             type: select
             proxies:
-                - 🚀 节点选择 
+                - ♻️ 自动选择
+                - DIRECT
 
           - name: 🛑 拦截
             type: select
@@ -55,7 +49,7 @@ parsers: # array
             - proxy-groups.🚀 节点选择.proxies.1+[]proxyNames # 向指定策略组添加订阅中的节点名，可使用正则过滤
             - proxy-groups.♻️ 自动选择.proxies=[]proxyNames
             # =覆盖 —删除 +插入
-            #- proxy-groups.🌍 国外.proxies.3+[]proxyNames
+            #- proxy-groups.🚀 节点选择.proxies.3+[]proxyNames
 
             
     #建立规则
@@ -200,15 +194,15 @@ parsers: # array
           - RULE-SET,reject,🛑 拦截
           - RULE-SET,icloud,DIRECT
           - RULE-SET,apple,DIRECT
-          - RULE-SET,google,🌍 国外
-          - RULE-SET,youtube,🌍 国外
-          - RULE-SET,netflix,🌍 国外
-          - RULE-SET,netflixcidr,🌍 国外,no-resolve
-          - RULE-SET,gfw,🌍 国外
-          - RULE-SET,greatfire,🌍 国外
-          - RULE-SET,tld-not-cn,🌍 国外
-          - RULE-SET,telegramcidr,🌍 国外,no-resolve
-          - RULE-SET,tiktok,🌍 国外
+          - RULE-SET,google,🚀 节点选择
+          - RULE-SET,youtube,🚀 节点选择
+          - RULE-SET,netflix,🚀 节点选择
+          - RULE-SET,netflixcidr,🚀 节点选择,no-resolve
+          - RULE-SET,gfw,🚀 节点选择
+          - RULE-SET,greatfire,🚀 节点选择
+          - RULE-SET,tld-not-cn,🚀 节点选择
+          - RULE-SET,telegramcidr,🚀 节点选择,no-resolve
+          - RULE-SET,tiktok,🚀 节点选择
           - GEOIP,CN,DIRECT
           - MATCH,🐟 漏网之鱼
 
