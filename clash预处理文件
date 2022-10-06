@@ -1,0 +1,217 @@
+parsers: # array
+  - reg: ^.*$ 
+  #匹配所有订阅，或   指定订阅 - url: 
+  #- reg: - url: https://2cysub.buzz/link/dDbZXtTyQpi5nzHQ?clash=1
+  #- reg: - url: https://fanfanyun2.club/api/v1/client/subscribe?token=50d4e9528570b4a6048469c01f7fe30f
+  
+  # 删除服务商提供的策略组和规则
+    code: |
+      module.exports.parse = (raw, { yaml }) => {
+        const rawObj = yaml.parse(raw)
+        const groups = []
+        const rules = []
+        return yaml.stringify({ ...rawObj, 'proxy-groups': groups, rules })
+      } 
+  # 建立自己的配置
+    yaml:     
+           
+  #添加分组
+
+      prepend-proxy-groups:
+          - name: 🚀 节点选择
+            type: select
+            proxies:
+                - DIRECT
+                - ♻️ 自动选择
+              
+          - name: ♻️ 自动选择
+            type: url-test
+            url: http://www.gstatic.com/generate_204
+            interval: 3000
+            tolerance: 50
+          
+          - name: 🚄 steam
+            type: select
+
+          - name: 🎮 游戏&🍁 软件
+            type: select
+            proxies:
+                - DIRECT
+                - 🚀 节点选择
+                - ♻️ 自动选择
+
+          - name: 🌍 国外媒体
+            type: select
+            proxies:
+                - DIRECT
+                - 🚀 节点选择
+                - ♻️ 自动选择  
+
+          - name: Ⓜ️ 微软&🍎 苹果
+            type: select
+            proxies:
+                - DIRECT
+                - 🚀 节点选择
+                - ♻️ 自动选择
+           
+          - name: 🎯 全球直连
+            type: select
+            proxies:
+              - REJECT
+              - DIRECT
+              - 🚀 节点选择
+
+          - name: 🛑 全球拦截
+            type: select
+            proxies:
+              - REJECT
+              - DIRECT
+              - 🚀 节点选择
+
+
+          - name: 🐟 漏网之鱼
+            type: select
+            proxies:
+              - DIRECT
+              - 🚀 节点选择
+
+            
+      commands:
+            - proxy-groups.🚀 节点选择.proxies=[]proxyNames # 向指定策略组添加订阅中的节点名，可使用正则过滤
+            - proxy-groups.🚀 节点选择.proxies.0+♻️ 自动选择
+            - proxy-groups.♻️ 自动选择.proxies=[]proxyNames
+            - proxy-groups.🌍 国外媒体.proxies=[]proxyNames
+            - proxy-groups.🚄 steam.proxies=[]proxyNames|阿根廷
+            - proxy-groups.🚄 steam.proxies.0+🚀 节点选择
+            - proxy-groups.🚄 steam.proxies.0+DIRECT
+    #建立规则
+      mix-rule-providers:
+           #常用软件
+            Applications:
+              type: file
+              behavior: classical
+              #url : https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/applications.txt
+              interval: 86400
+              path: ./ACL4SSR/applications.yaml
+           #steam商店和社区代理,很是烦恼(代理了不能每次重新登录,不代理得进不了商店和社区!)
+            Steam:
+              behavior: classical
+              type: file
+              #url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/Ruleset/Steam.yaml
+              interval: 86400
+              path: ./ACL4SSR/steam.yaml
+           #steam不用代理的部分
+            SteamCN:
+              behavior: classical 
+              type: file
+             # url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/Ruleset/SteamCN.yaml"
+              interval: 86400
+              path: ./ACL4SSR/SteamCN.yaml
+           #本地/局域网地址
+            LocalAreaNetwork:
+              behavior: classical # domain, ipcidr or classical (premium core only)
+              type: file
+             # url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/LocalAreaNetwork.yaml"
+              interval: 86400
+              path: ./ACL4SSR/LocalAreaNetwork.yaml
+           #不得过滤
+            UnBan:
+              behavior: classical 
+              type: file
+             # url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/UnBan.yaml"
+              interval: 86400
+              path: ./ACL4SSR/UnBan.yaml
+           #广告过滤
+            BanAD:
+              behavior: classical 
+              type: file
+             # url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/BanAD.yaml"
+              interval: 86400
+              path: ./ACL4SSR/BanAD.yaml
+           # 包含常用应用的各种去广告规则。
+            BanProgramAD:
+              behavior: classical 
+              type: file
+             # url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/BanProgramAD.yaml"
+              interval: 86400
+              path: ./ACL4SSR/BanProgramAD.yaml
+            # 内容：GoogleCN
+            GoogleCN:
+              behavior: classical 
+              type: file
+             # url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/Ruleset/GoogleCN.yaml"
+              interval: 86400
+              path: ./ACL4SSR/GoogleCN.yaml
+
+           #微软
+            Microsoft:
+              behavior: classical 
+              type: file
+             # url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/Ruleset/Microsoft.yaml"
+              interval: 86400
+              path: ./ACL4SSR/Microsoft.yaml
+           #苹果
+            Apple:
+              behavior: classical 
+              type: file
+             # url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/Ruleset/Apple.yaml"
+              interval: 86400
+              path: ./ACL4SSR/Apple.yaml
+           #Telegram
+            Telegram:
+              behavior: classical 
+              type: file
+             # url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/Ruleset/Telegram.yaml"
+              interval: 86400
+              path: ./ACL4SSR/Telegram.yaml
+           #代理列表
+            ProxyLite:
+              behavior: classical 
+              type: file
+             # url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/ProxyLite.yaml"
+              interval: 86400
+              path: ./ACL4SSR/ProxyLite.yaml
+           #国外媒体列表
+            ProxyMedia:
+              behavior: classical 
+              type: file
+             # url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/ProxyMedia.yaml"
+              interval: 86400
+              path: ./ACL4SSR/ProxyMedia.yaml
+           # 直连列表
+            ChinaDomain:
+              behavior: classical 
+              type: file
+             # url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/ChinaDomain.yaml"
+              interval: 86400
+              path: ./ACL4SSR/ChinaDomain.yaml
+          
+           #中国云服务商ip
+            ChinaCompanyIp:
+              behavior: ipcidr
+              type: file
+             # url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/ChinaCompanyIp.yaml
+              interval: 14400
+              path: ./ACL4SSR/ChinaCompanyIp.yaml
+
+           
+      prepend-rules: 
+         - RULE-SET,Applications,🎮 游戏&🍁 软件
+         - PROCESS-NAME,csgo.exe,🎮 游戏&🍁 软件     #自定义规则，源进程名匹配
+         - PROCESS-NAME,Motrix.exe,🎮 游戏&🍁 软件   #自定义规则，源进程名匹配
+         - RULE-SET,Steam,🚄 steam
+         - RULE-SET,SteamCN,🎯 全球直连
+         - RULE-SET,ChinaCompanyIp,🎯 全球直连
+         - RULE-SET,LocalAreaNetwork,🎯 全球直连
+         - RULE-SET,ProxyMedia,🌍 国外媒体
+         - RULE-SET,UnBan,🎯 全球直连
+         - RULE-SET,BanAD,🛑 全球拦截
+         - RULE-SET,BanProgramAD,🛑 全球拦截
+         - RULE-SET,GoogleCN,🚀 节点选择 
+         - RULE-SET,Microsoft,Ⓜ️ 微软&🍎 苹果
+         - RULE-SET,Apple,Ⓜ️ 微软&🍎 苹果
+         - RULE-SET,Telegram,🚀 节点选择
+         - RULE-SET,ProxyLite,🚀 节点选择 
+         - RULE-SET,ChinaDomain,🎯 全球直连
+         - GEOIP,CN,🎯 全球直连
+         - MATCH,🐟 漏网之鱼
