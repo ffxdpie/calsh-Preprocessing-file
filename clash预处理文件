@@ -1,8 +1,8 @@
 parsers: # array
+  #匹配所有订阅
   - reg: ^.*$ 
-  #匹配所有订阅，或   指定订阅 - url: 
-  #- reg: - url: https://2cysub.buzz/link/dDbZXtTyQpi5nzHQ?clash=1
-  #- reg: - url: https://fanfanyun2.club/api/v1/client/subscribe?token=50d4e9528570b4a6048469c01f7fe30f
+  #指定订阅 - url: 
+  #- reg: - url: 订阅网站
   
   # 删除服务商提供的策略组和规则
     code: |
