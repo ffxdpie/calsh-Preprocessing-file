@@ -1,8 +1,4 @@
-
-    
-    
-    
-    parsers: # array
+parsers: # array
   #匹配所有订阅
   - reg: ^.*$ 
   #指定订阅 - url: 
@@ -25,8 +21,9 @@
           - name: 🚀 节点选择
             type: select
             proxies:
-                - DIRECT
                 - ♻️ 自动选择
+                - DIRECT
+
               
           - name: ♻️ 自动选择
             type: url-test
@@ -37,22 +34,13 @@
           - name: 🌍 国外
             type: select
             proxies:
-                - DIRECT
-                - 🚀 节点选择
-                - ♻️ 自动选择  
-           
-          - name: 🎯 国内
-            type: select
-            proxies:
-              - REJECT
-              - DIRECT
-              - 🚀 节点选择
+                - 🚀 节点选择 
 
           - name: 🛑 拦截
             type: select
             proxies:
-              - REJECT
-              - DIRECT
+              - REJECT   #拦截
+              - DIRECT   #直连
               - 🚀 节点选择
 
 
@@ -64,9 +52,10 @@
 
             
       commands:
-            - proxy-groups.🚀 节点选择.proxies=[]proxyNames # 向指定策略组添加订阅中的节点名，可使用正则过滤
+            - proxy-groups.🚀 节点选择.proxies.1+[]proxyNames # 向指定策略组添加订阅中的节点名，可使用正则过滤
             - proxy-groups.♻️ 自动选择.proxies=[]proxyNames
-            - proxy-groups.🌍 国外.proxies=[]proxyNames
+            # =覆盖 —删除 +插入
+            #- proxy-groups.🌍 国外.proxies.3+[]proxyNames
 
             
     #建立规则
@@ -206,11 +195,11 @@
           - PROCESS-NAME,NetTransport,DIRECT
           - PROCESS-NAME,uTorrent,DIRECT
           - PROCESS-NAME,WebTorrent,DIRECT
-          - RULE-SET,lancidr,🎯 国内,no-resolve
-          - RULE-SET,cncidr,🎯 国内,no-resolve
+          - RULE-SET,lancidr,DIRECT,no-resolve
+          - RULE-SET,cncidr,DIRECT,no-resolve
           - RULE-SET,reject,🛑 拦截
-          - RULE-SET,icloud,🎯 国内
-          - RULE-SET,apple,🎯 国内
+          - RULE-SET,icloud,DIRECT
+          - RULE-SET,apple,DIRECT
           - RULE-SET,google,🌍 国外
           - RULE-SET,youtube,🌍 国外
           - RULE-SET,netflix,🌍 国外
@@ -220,7 +209,6 @@
           - RULE-SET,tld-not-cn,🌍 国外
           - RULE-SET,telegramcidr,🌍 国外,no-resolve
           - RULE-SET,tiktok,🌍 国外
-          - GEOIP,CN,🎯 国内
+          - GEOIP,CN,DIRECT
           - MATCH,🐟 漏网之鱼
-
 
