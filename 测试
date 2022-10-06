@@ -1,114 +1,226 @@
-rule-providers:
-  reject:
-    type: http
-    behavior: domain
-    url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/reject.txt"
-    path: ./ruleset/reject.yaml
-    interval: 86400
 
-  icloud:
-    type: http
-    behavior: domain
-    url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/icloud.txt"
-    path: ./ruleset/icloud.yaml
-    interval: 86400
-
-  apple:
-    type: http
-    behavior: domain
-    url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/apple.txt"
-    path: ./ruleset/apple.yaml
-    interval: 86400
-
-  google:
-    type: http
-    behavior: domain
-    url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/google.txt"
-    path: ./ruleset/google.yaml
-    interval: 86400
-
-  proxy:
-    type: http
-    behavior: domain
-    url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/proxy.txt"
-    path: ./ruleset/proxy.yaml
-    interval: 86400
-
-  direct:
-    type: http
-    behavior: domain
-    url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/direct.txt"
-    path: ./ruleset/direct.yaml
-    interval: 86400
-
-  cncidr:
-    type: http
-    behavior: ipcidr
-    url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/cncidr.txt"
-    path: ./ruleset/cncidr.yaml
-    interval: 86400
-
-  lancidr:
-    type: http
-    behavior: ipcidr
-    url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/lancidr.txt"
-    path: ./ruleset/lancidr.yaml
-    interval: 86400
-
-  youtube:
-    type: http
-    behavior: domain
-    url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/youtube.txt"
-    path: ./ruleset/youtube.yaml
-    interval: 86400
     
-  netflix:
-    type: http
-    behavior: domain
-    url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/netflix.txt"
-    path: ./ruleset/netflix.yaml
-    interval: 86400
     
-  netflixcidr:
-    type: http
-    behavior: ipcidr
-    url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/netflixcidr.txt"
-    path: ./ruleset/netflixcidr.yaml
-    interval: 86400
+    
+    parsers: # array
+  #匹配所有订阅
+  - reg: ^.*$ 
+  #指定订阅 - url: 
+  #- reg: - url: 订阅网站
+  
+  # 删除服务商提供的策略组和规则
+    code: |
+      module.exports.parse = (raw, { yaml }) => {
+        const rawObj = yaml.parse(raw)
+        const groups = []
+        const rules = []
+        return yaml.stringify({ ...rawObj, 'proxy-groups': groups, rules })
+      } 
+  # 建立自己的配置
+    yaml:     
+           
+  #添加分组
 
-  gfw:
-    type: http
-    behavior: domain
-    url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/gfw.txt"
-    path: ./ruleset/gfw.yaml
-    interval: 86400
+      prepend-proxy-groups:
+          - name: 🚀 节点选择
+            type: select
+            proxies:
+                - DIRECT
+                - ♻️ 自动选择
+              
+          - name: ♻️ 自动选择
+            type: url-test
+            url: http://www.gstatic.com/generate_204
+            interval: 3000
+            tolerance: 50
 
-  greatfire:
-    type: http
-    behavior: domain
-    url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/greatfire.txt"
-    path: ./ruleset/greatfire.yaml
-    interval: 86400
+          - name: 🌍 国外
+            type: select
+            proxies:
+                - DIRECT
+                - 🚀 节点选择
+                - ♻️ 自动选择  
+           
+          - name: 🎯 国内
+            type: select
+            proxies:
+              - REJECT
+              - DIRECT
+              - 🚀 节点选择
 
-  tld-not-cn:
-    type: http
-    behavior: domain
-    url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/tld-not-cn.txt"
-    path: ./ruleset/tld-not-cn.yaml
-    interval: 86400
+          - name: 🛑 拦截
+            type: select
+            proxies:
+              - REJECT
+              - DIRECT
+              - 🚀 节点选择
 
-  telegramcidr:
-    type: http
-    behavior: ipcidr
-    url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/telegramcidr.txt"
-    path: ./ruleset/telegramcidr.yaml
-    interval: 86400
 
-  tiktok:
-    type: http
-    behavior: domain
-    url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/tiktok.txt"
-    path: ./ruleset/tiktok.yaml
-    interval: 86400
+          - name: 🐟 漏网之鱼
+            type: select
+            proxies:
+              - DIRECT
+              - 🚀 节点选择
+
+            
+      commands:
+            - proxy-groups.🚀 节点选择.proxies=[]proxyNames # 向指定策略组添加订阅中的节点名，可使用正则过滤
+            - proxy-groups.♻️ 自动选择.proxies=[]proxyNames
+            - proxy-groups.🌍 国外媒体.proxies=[]proxyNames
+
+            
+    #建立规则
+      mix-rule-providers:
+          
+            reject:
+              type: http
+              behavior: domain
+              url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/reject.txt"
+              path: ./ruleset/reject.yaml
+              interval: 86400
+
+            icloud:
+              type: http
+              behavior: domain
+              url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/icloud.txt"
+              path: ./ruleset/icloud.yaml
+              interval: 86400
+
+            apple:
+              type: http
+              behavior: domain
+              url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/apple.txt"
+              path: ./ruleset/apple.yaml
+              interval: 86400
+
+            google:
+              type: http
+              behavior: domain
+              url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/google.txt"
+              path: ./ruleset/google.yaml
+              interval: 86400
+
+            proxy:
+              type: http
+              behavior: domain
+              url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/proxy.txt"
+              path: ./ruleset/proxy.yaml
+              interval: 86400
+
+            direct:
+              type: http
+              behavior: domain
+              url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/direct.txt"
+              path: ./ruleset/direct.yaml
+              interval: 86400
+
+            cncidr:
+              type: http
+              behavior: ipcidr
+              url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/cncidr.txt"
+              path: ./ruleset/cncidr.yaml
+              interval: 86400
+
+            lancidr:
+              type: http
+              behavior: ipcidr
+              url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/lancidr.txt"
+              path: ./ruleset/lancidr.yaml
+              interval: 86400
+
+            youtube:
+              type: http
+              behavior: domain
+              url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/youtube.txt"
+              path: ./ruleset/youtube.yaml
+              interval: 86400
+
+            netflix:
+              type: http
+              behavior: domain
+              url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/netflix.txt"
+              path: ./ruleset/netflix.yaml
+              interval: 86400
+
+            netflixcidr:
+              type: http
+              behavior: ipcidr
+              url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/netflixcidr.txt"
+              path: ./ruleset/netflixcidr.yaml
+              interval: 86400
+
+            gfw:
+              type: http
+              behavior: domain
+              url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/gfw.txt"
+              path: ./ruleset/gfw.yaml
+              interval: 86400
+
+            greatfire:
+              type: http
+              behavior: domain
+              url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/greatfire.txt"
+              path: ./ruleset/greatfire.yaml
+              interval: 86400
+
+            tld-not-cn:
+              type: http
+              behavior: domain
+              url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/tld-not-cn.txt"
+              path: ./ruleset/tld-not-cn.yaml
+              interval: 86400
+
+            telegramcidr:
+              type: http
+              behavior: ipcidr
+              url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/telegramcidr.txt"
+              path: ./ruleset/telegramcidr.yaml
+              interval: 86400
+
+            tiktok:
+              type: http
+              behavior: domain
+              url: "https://raw.githubusercontent.com/snapei/clash-pro-rules/release/tiktok.txt"
+              path: ./ruleset/tiktok.yaml
+              interval: 86400
+
+
+
+
+           
+      prepend-rules: 
+          - PROCESS-NAME,v2ray,DIRECT
+          - PROCESS-NAME,Surge%203,DIRECT
+          - PROCESS-NAME,ss-local,DIRECT
+          - PROCESS-NAME,privoxy,DIRECT
+          - PROCESS-NAME,trojan,DIRECT
+          - PROCESS-NAME,trojan-go,DIRECT
+          - PROCESS-NAME,naive,DIRECT
+          - PROCESS-NAME,Thunder,DIRECT
+          - PROCESS-NAME,DownloadService,DIRECT
+          - PROCESS-NAME,qBittorrent,DIRECT
+          - PROCESS-NAME,Transmission,DIRECT
+          - PROCESS-NAME,fdm,DIRECT
+          - PROCESS-NAME,aria2c,DIRECT
+          - PROCESS-NAME,Folx,DIRECT
+          - PROCESS-NAME,NetTransport,DIRECT
+          - PROCESS-NAME,uTorrent,DIRECT
+          - PROCESS-NAME,WebTorrent,DIRECT
+          - RULE-SET,lancidr,🎯 国内,no-resolve
+          - RULE-SET,cncidr,🎯 国内,no-resolve
+          - RULE-SET,reject,🛑 拦截
+          - RULE-SET,icloud,🎯 国内
+          - RULE-SET,apple,🎯 国内
+          - RULE-SET,google,🌍 国外
+          - RULE-SET,youtube,🌍 国外
+          - RULE-SET,netflix,🌍 国外
+          - RULE-SET,netflixcidr,🌍 国外,no-resolve
+          - RULE-SET,gfw,🌍 国外
+          - RULE-SET,greatfire,🌍 国外
+          - RULE-SET,tld-not-cn,🌍 国外
+          - RULE-SET,telegramcidr,🌍 国外,no-resolve
+          - RULE-SET,tiktok,🌍 国外
+          - GEOIP,CN,🎯 国内
+          - MATCH,🐟 漏网之鱼
 
 
