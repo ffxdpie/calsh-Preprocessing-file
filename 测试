@@ -66,7 +66,7 @@
       commands:
             - proxy-groups.🚀 节点选择.proxies=[]proxyNames # 向指定策略组添加订阅中的节点名，可使用正则过滤
             - proxy-groups.♻️ 自动选择.proxies=[]proxyNames
-            - proxy-groups.🌍 国外媒体.proxies=[]proxyNames
+            - proxy-groups.🌍 国外.proxies=[]proxyNames
 
             
     #建立规则
